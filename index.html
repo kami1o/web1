@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Trabajos con Fotos</title>
+    <title>Gestor de Trabajos PRO</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; background-color: #f0f2f5; color: #1c1e21; }
         h1, h2, h3 { text-align: center; color: #050505; }
@@ -15,23 +15,25 @@
         .btn-calc { background: #42b72a; }
         .btn-historial { background: #ff9800; }
         .btn-archivo { background: #009688; margin-top: 15px; }
+        .btn-ws { background: #25D366; padding: 5px 10px; font-size: 12px; margin-top: 10px; }
         
         .hidden { display: none; }
-        .card { background: white; padding: 15px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }
+        .card { background: white; padding: 0; margin: 15px 0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+        .card-content { padding: 15px; }
         .fecha { font-size: 12px; color: #1877f2; display: block; margin-bottom: 5px; font-weight: bold; text-transform: capitalize; }
         
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; }
         .total-box { background: #ffffff; border: 2px solid #42b72a; color: #42b72a; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
         .checkbox-container { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
         
-        .img-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; display: block; }
-        .foto-paso { text-align: center; border: 2px dashed #ccc; padding: 20px; border-radius: 10px; cursor: pointer; }
+        .img-preview { width: 100%; height: 220px; object-fit: cover; display: block; background-color: #ddd; }
+        .foto-paso { text-align: center; border: 2px dashed #1877f2; padding: 30px; border-radius: 10px; cursor: pointer; background: #e7f3ff; color: #1877f2; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="pantalla-inicio">
-        <h1>?? Mi Taller</h1>
+        <h1>🛠 Mi Taller</h1>
         <div class="menu-container">
             <button onclick="abrirSeccion('principal')">Mis Trabajos</button>
             <button onclick="abrirSeccion('extra')" style="background:#8e44ad;">Trabajos Extra</button>
@@ -42,29 +44,29 @@
     <div id="vista-seccion" class="hidden">
         <h2 id="titulo-seccion"></h2>
         <div class="menu-container">
-            <button onclick="mostrarFormulario()">? Agregar trabajo</button>
-            <button class="btn-calc" onclick="calcularTotal()">?? Calcular total</button>
+            <button onclick="mostrarFormulario()">➕ Agregar trabajo</button>
+            <button class="btn-calc" onclick="calcularTotal()">💰 Calcular total</button>
             <div id="contenedor-items"></div>
-            <button class="btn-volver" onclick="irInicio()">Volver al Men�</button>
+            <button class="btn-volver" onclick="irInicio()">Volver al Menú</button>
         </div>
     </div>
 
     <div id="seccion-historial" class="hidden">
-        <h2>?? Historial</h2>
+        <h2>📜 Historial</h2>
         <div id="contenedor-historial"></div>
-        <button class="btn-volver" onclick="irInicio()">Volver al Men�</button>
+        <button class="btn-volver" onclick="irInicio()">Volver al Menú</button>
     </div>
 
     <div id="formulario-trabajo" class="hidden">
         <h2 id="titulo-form"></h2>
         <div id="paso1">
-            <h3>1. Informaci�n del veh�culo</h3>
+            <h3>1. Información del vehículo</h3>
             <input type="text" id="vehiculo" placeholder="Ej: Mazda 3 - ABC 123">
             <button onclick="siguiente(2)" style="width:100%">Siguiente</button>
         </div>
         <div id="paso2" class="hidden">
-            <h3>2. Descripci�n</h3>
-            <input type="text" id="descripcion" placeholder="�Qu� se le hizo?">
+            <h3>2. Descripción</h3>
+            <input type="text" id="descripcion" placeholder="¿Qué se le hizo?">
             <button onclick="siguiente(3)" style="width:100%">Siguiente</button>
         </div>
         <div id="paso3" class="hidden">
@@ -73,12 +75,12 @@
             <button onclick="siguiente(4)" style="width:100%">Siguiente</button>
         </div>
         <div id="paso4" class="hidden">
-            <h3>4. Foto del Veh�culo</h3>
+            <h3>4. Foto del Vehículo</h3>
             <div class="foto-paso" onclick="document.getElementById('input-foto').click()">
-                ?? Tocar para subir o tomar foto
+                📷 Tocar para capturar foto
                 <input type="file" id="input-foto" accept="image/*" hidden onchange="previsualizarFoto(event)">
             </div>
-            <img id="preview-form" class="img-preview hidden">
+            <img id="preview-form" class="img-preview hidden" style="margin-top:10px; border-radius:8px;">
             <button onclick="guardarTrabajo()" style="width:100%; background:#42b72a; margin-top:15px;">Ok (Finalizar)</button>
         </div>
         <button class="btn-volver" onclick="cancelarRegistro()">Cancelar</button>
@@ -95,7 +97,7 @@
 
     <script>
         let categoriaActual = ''; 
-        let fotoData = ''; // Variable temporal para la foto
+        let fotoData = ''; 
         let datos = {
             principal: JSON.parse(localStorage.getItem('trabajos_principal')) || [],
             extra: JSON.parse(localStorage.getItem('trabajos_extra')) || [],
@@ -119,18 +121,17 @@
             const file = event.target.files[0];
             const reader = new FileReader();
             reader.onload = function() {
-                // Redimensionar imagen para ahorrar espacio
                 const img = new Image();
                 img.src = reader.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    const maxW = 400;
+                    const maxW = 500;
                     const scale = maxW / img.width;
                     canvas.width = maxW;
                     canvas.height = img.height * scale;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    fotoData = canvas.toDataURL('image/jpeg', 0.7);
+                    fotoData = canvas.toDataURL('image/jpeg', 0.6);
                     document.getElementById('preview-form').src = fotoData;
                     document.getElementById('preview-form').classList.remove('hidden');
                 }
@@ -160,6 +161,12 @@
             renderizarLista();
         }
 
+        function compartirWhatsApp(id) {
+            const item = datos[categoriaActual].find(i => i.id === id) || datos.historial.find(i => i.id === id);
+            const mensaje = `*Resumen de Trabajo:*%0A🚗 *Vehículo:* ${item.vehiculo}%0A🛠 *Descripción:* ${item.descripcion}%0A📅 *Fecha:* ${item.fecha}%0A💰 *Valor:* $${item.valor.toLocaleString()}`;
+            window.open(`https://wa.me/?text=${mensaje}`, '_blank');
+        }
+
         function renderizarLista() {
             const contenedor = document.getElementById('contenedor-items');
             contenedor.innerHTML = '';
@@ -167,12 +174,13 @@
                 contenedor.innerHTML += `
                     <div class="card">
                         ${item.foto ? `<img src="${item.foto}" class="img-preview">` : ''}
-                        <div style="padding:10px">
-                            <span class="fecha">?? ${item.fecha}</span>
+                        <div class="card-content">
+                            <span class="fecha">📅 ${item.fecha}</span>
                             <strong>${item.vehiculo}</strong> - <span style="color:#2ecc71">$${item.valor.toLocaleString()}</span>
-                            <div style="font-size:14px; color:#444;">${item.descripcion}</div>
+                            <div style="font-size:14px; color:#444; margin-top:5px;">${item.descripcion}</div>
+                            <button class="btn-ws" onclick="compartirWhatsApp(${item.id})">📲 Enviar por WhatsApp</button>
                             <label class="checkbox-container">
-                                <input type="checkbox" ${item.seleccionado ? 'checked' : ''} onchange="toggleItem(${item.id})"> Incluir en c�lculo
+                                <input type="checkbox" ${item.seleccionado ? 'checked' : ''} onchange="toggleItem(${item.id})"> Incluir en el cobro
                             </label>
                         </div>
                     </div>`;
@@ -183,14 +191,15 @@
             document.getElementById('pantalla-inicio').classList.add('hidden');
             document.getElementById('seccion-historial').classList.remove('hidden');
             const cont = document.getElementById('contenedor-historial');
-            cont.innerHTML = datos.historial.length ? '' : '<p style="text-align:center">Vac�o.</p>';
+            cont.innerHTML = datos.historial.length ? '' : '<p style="text-align:center">Historial vacío.</p>';
             [...datos.historial].reverse().forEach(item => {
                 cont.innerHTML += `
-                    <div class="card" style="opacity:0.8">
-                        ${item.foto ? `<img src="${item.foto}" class="img-preview">` : ''}
-                        <div style="padding:10px">
-                            <span class="fecha">? ${item.fecha}</span>
+                    <div class="card">
+                        ${item.foto ? `<img src="${item.foto}" class="img-preview" style="filter: grayscale(0.5);">` : ''}
+                        <div class="card-content">
+                            <span class="fecha">✅ Archivado: ${item.fecha}</span>
                             <p><strong>${item.vehiculo}</strong> - $${item.valor.toLocaleString()}</p>
+                            <button class="btn-ws" onclick="compartirWhatsApp(${item.id})">📲 Re-enviar comprobante</button>
                         </div>
                     </div>`;
             });
@@ -210,7 +219,7 @@
 
         function archivarTrabajos() {
             const seleccionados = datos[categoriaActual].filter(i => i.seleccionado);
-            if(seleccionados.length === 0) return alert("Nada seleccionado");
+            if(seleccionados.length === 0) return alert("Selecciona trabajos");
             datos.historial.push(...seleccionados);
             datos[categoriaActual] = datos[categoriaActual].filter(i => !i.seleccionado);
             localStorage.setItem('trabajos_' + categoriaActual, JSON.stringify(datos[categoriaActual]));
