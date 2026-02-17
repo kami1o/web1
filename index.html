@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Trabajos PRO</title>
+    <title>Gestor de Trabajos</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; background-color: #f0f2f5; color: #1c1e21; }
-        h1, h2, h3 { text-align: center; color: #050505; }
+        h1, h2, h3 { text-align: center; }
         .menu-container { display: flex; flex-direction: column; gap: 12px; }
         
         button { padding: 15px; font-size: 16px; cursor: pointer; border: none; border-radius: 8px; transition: 0.2s; background: #1877f2; color: white; font-weight: bold; }
-        button:hover { background: #166fe5; }
         .btn-volver { background: #606770; margin-top: 10px; width: 100%; }
         .btn-calc { background: #42b72a; }
-        .btn-historial { background: #ff9800; }
-        .btn-archivo { background: #009688; margin-top: 15px; }
-        .btn-ws { background: #25D366; padding: 5px 10px; font-size: 12px; margin-top: 10px; }
+        .btn-ws { background: #25D366; padding: 8px; font-size: 12px; border-radius: 5px; margin-top: 10px; }
         
         .hidden { display: none; }
-        .card { background: white; padding: 0; margin: 15px 0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+        .card { background: white; margin: 15px 0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; position: relative; }
         .card-content { padding: 15px; }
-        .fecha { font-size: 12px; color: #1877f2; display: block; margin-bottom: 5px; font-weight: bold; text-transform: capitalize; }
         
+        /* Botones de acción en la tarjeta */
+        .acciones-card { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; }
+        .btn-accion { background: rgba(255,255,255,0.9); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; font-size: 16px; }
+
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; }
-        .total-box { background: #ffffff; border: 2px solid #42b72a; color: #42b72a; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
-        .checkbox-container { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+        .img-preview { width: 100%; height: 200px; object-fit: cover; display: block; background: #eee; }
         
-        .img-preview { width: 100%; height: 220px; object-fit: cover; display: block; background-color: #ddd; }
-        .foto-paso { text-align: center; border: 2px dashed #1877f2; padding: 30px; border-radius: 10px; cursor: pointer; background: #e7f3ff; color: #1877f2; font-weight: bold; }
+        .total-box { background: white; border: 2px solid #42b72a; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
+        .porcentaje { color: #e67e22; font-weight: bold; font-size: 18px; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; }
+        .checkbox-container { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -37,67 +37,67 @@
         <div class="menu-container">
             <button onclick="abrirSeccion('principal')">Mis Trabajos</button>
             <button onclick="abrirSeccion('extra')" style="background:#8e44ad;">Trabajos Extra</button>
-            <button class="btn-historial" onclick="abrirHistorial()">Ver Historial</button>
+            <button onclick="abrirHistorial()" style="background:#ff9800;">Ver Historial</button>
         </div>
     </div>
 
     <div id="vista-seccion" class="hidden">
         <h2 id="titulo-seccion"></h2>
         <div class="menu-container">
-            <button onclick="mostrarFormulario()">➕ Agregar trabajo</button>
+            <button onclick="prepararNuevoTrabajo()">➕ Agregar trabajo</button>
             <button class="btn-calc" onclick="calcularTotal()">💰 Calcular total</button>
             <div id="contenedor-items"></div>
-            <button class="btn-volver" onclick="irInicio()">Volver al Menú</button>
+            <button class="btn-volver" onclick="irInicio()">Volver</button>
         </div>
-    </div>
-
-    <div id="seccion-historial" class="hidden">
-        <h2>📜 Historial</h2>
-        <div id="contenedor-historial"></div>
-        <button class="btn-volver" onclick="irInicio()">Volver al Menú</button>
     </div>
 
     <div id="formulario-trabajo" class="hidden">
-        <h2 id="titulo-form"></h2>
+        <h2 id="titulo-form">Trabajo</h2>
         <div id="paso1">
-            <h3>1. Información del vehículo</h3>
-            <input type="text" id="vehiculo" placeholder="Ej: Mazda 3 - ABC 123">
+            <h3>Vehículo</h3>
+            <input type="text" id="vehiculo" placeholder="Placa o Modelo">
             <button onclick="siguiente(2)" style="width:100%">Siguiente</button>
         </div>
         <div id="paso2" class="hidden">
-            <h3>2. Descripción</h3>
-            <input type="text" id="descripcion" placeholder="¿Qué se le hizo?">
+            <h3>Descripción</h3>
+            <input type="text" id="descripcion" placeholder="¿Qué se hizo?">
             <button onclick="siguiente(3)" style="width:100%">Siguiente</button>
         </div>
         <div id="paso3" class="hidden">
-            <h3>3. Valor ($)</h3>
+            <h3>Valor ($)</h3>
             <input type="number" id="valor" placeholder="Monto">
             <button onclick="siguiente(4)" style="width:100%">Siguiente</button>
         </div>
         <div id="paso4" class="hidden">
-            <h3>4. Foto del Vehículo</h3>
-            <div class="foto-paso" onclick="document.getElementById('input-foto').click()">
-                📷 Tocar para capturar foto
-                <input type="file" id="input-foto" accept="image/*" hidden onchange="previsualizarFoto(event)">
-            </div>
-            <img id="preview-form" class="img-preview hidden" style="margin-top:10px; border-radius:8px;">
-            <button onclick="guardarTrabajo()" style="width:100%; background:#42b72a; margin-top:15px;">Ok (Finalizar)</button>
+            <h3>Foto</h3>
+            <input type="file" id="input-foto" accept="image/*" hidden onchange="previsualizarFoto(event)">
+            <button onclick="document.getElementById('input-foto').click()" style="width:100%; background:#3498db">📷 Subir Foto</button>
+            <img id="preview-form" class="img-preview hidden" style="margin-top:10px; border-radius: 8px;">
+            <button onclick="guardarTrabajo()" style="width:100%; background:#42b72a; margin-top:15px;">Finalizar</button>
         </div>
         <button class="btn-volver" onclick="cancelarRegistro()">Cancelar</button>
     </div>
 
     <div id="pantalla-total" class="hidden">
         <div class="total-box">
-            <h3 id="txt-total-titulo"></h3>
-            <h2 id="resultado-suma" style="font-size: 32px; margin: 10px 0;"></h2>
-            <button class="btn-archivo" onclick="archivarTrabajos()">Guardar en Historial</button>
+            <h3>Resumen de Cobro</h3>
+            <h2 id="resultado-suma" style="color: #2ecc71;"></h2>
+            <div id="resultado-40" class="porcentaje"></div>
+            <button onclick="archivarTrabajos()" style="background:#009688; width:100%; margin-top:15px; padding:12px; color:white; border-radius:8px; border:none; font-weight:bold;">Guardar en Historial</button>
         </div>
         <button class="btn-volver" onclick="cerrarTotal()">Cerrar</button>
+    </div>
+
+    <div id="seccion-historial" class="hidden">
+        <h2>📜 Historial</h2>
+        <div id="contenedor-historial"></div>
+        <button class="btn-volver" onclick="irInicio()">Volver</button>
     </div>
 
     <script>
         let categoriaActual = ''; 
         let fotoData = ''; 
+        let idEditando = null;
         let datos = {
             principal: JSON.parse(localStorage.getItem('trabajos_principal')) || [],
             extra: JSON.parse(localStorage.getItem('trabajos_extra')) || [],
@@ -111,60 +111,75 @@
 
         function abrirSeccion(cat) {
             categoriaActual = cat;
+            irInicio();
             document.getElementById('pantalla-inicio').classList.add('hidden');
             document.getElementById('vista-seccion').classList.remove('hidden');
             document.getElementById('titulo-seccion').innerText = cat === 'principal' ? 'Mis Trabajos' : 'Trabajos Extra';
             renderizarLista();
         }
 
-        function previsualizarFoto(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function() {
-                const img = new Image();
-                img.src = reader.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const maxW = 500;
-                    const scale = maxW / img.width;
-                    canvas.width = maxW;
-                    canvas.height = img.height * scale;
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    fotoData = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('preview-form').src = fotoData;
-                    document.getElementById('preview-form').classList.remove('hidden');
-                }
-            }
-            reader.readAsDataURL(file);
+        function prepararNuevoTrabajo() {
+            idEditando = null;
+            document.getElementById('vehiculo').value = "";
+            document.getElementById('descripcion').value = "";
+            document.getElementById('valor').value = "";
+            document.getElementById('preview-form').src = "";
+            document.getElementById('preview-form').classList.add('hidden');
+            fotoData = "";
+            mostrarFormulario();
+        }
+
+        function mostrarFormulario() {
+            document.getElementById('vista-seccion').classList.add('hidden');
+            document.getElementById('formulario-trabajo').classList.remove('hidden');
+            siguiente(1);
         }
 
         function guardarTrabajo() {
             const v = document.getElementById('vehiculo').value;
             const d = document.getElementById('descripcion').value;
             const val = document.getElementById('valor').value;
-            if(!v || !d || !val) return alert("Completa los datos");
 
-            const nuevo = { 
-                id: Date.now(), 
-                fecha: new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ''), 
-                vehiculo: v, 
-                descripcion: d, 
-                valor: parseFloat(val), 
-                foto: fotoData,
-                seleccionado: true 
-            };
+            if(idEditando) {
+                const index = datos[categoriaActual].findIndex(i => i.id === idEditando);
+                datos[categoriaActual][index].vehiculo = v;
+                datos[categoriaActual][index].descripcion = d;
+                datos[categoriaActual][index].valor = parseFloat(val);
+                datos[categoriaActual][index].foto = fotoData;
+            } else {
+                const nuevo = { 
+                    id: Date.now(), 
+                    fecha: new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }), 
+                    vehiculo: v, descripcion: d, valor: parseFloat(val), foto: fotoData, seleccionado: true 
+                };
+                datos[categoriaActual].push(nuevo);
+            }
             
-            datos[categoriaActual].push(nuevo);
             localStorage.setItem('trabajos_' + categoriaActual, JSON.stringify(datos[categoriaActual]));
             cancelarRegistro();
             renderizarLista();
         }
 
-        function compartirWhatsApp(id) {
-            const item = datos[categoriaActual].find(i => i.id === id) || datos.historial.find(i => i.id === id);
-            const mensaje = `*Resumen de Trabajo:*%0A🚗 *Vehículo:* ${item.vehiculo}%0A🛠 *Descripción:* ${item.descripcion}%0A📅 *Fecha:* ${item.fecha}%0A💰 *Valor:* $${item.valor.toLocaleString()}`;
-            window.open(`https://wa.me/?text=${mensaje}`, '_blank');
+        function eliminarTrabajo(id) {
+            if(confirm("¿Eliminar este trabajo?")) {
+                datos[categoriaActual] = datos[categoriaActual].filter(i => i.id !== id);
+                localStorage.setItem('trabajos_' + categoriaActual, JSON.stringify(datos[categoriaActual]));
+                renderizarLista();
+            }
+        }
+
+        function editarTrabajo(id) {
+            const item = datos[categoriaActual].find(i => i.id === id);
+            idEditando = item.id;
+            document.getElementById('vehiculo').value = item.vehiculo;
+            document.getElementById('descripcion').value = item.descripcion;
+            document.getElementById('valor').value = item.valor;
+            fotoData = item.foto;
+            if(fotoData) {
+                document.getElementById('preview-form').src = fotoData;
+                document.getElementById('preview-form').classList.remove('hidden');
+            }
+            mostrarFormulario();
         }
 
         function renderizarLista() {
@@ -173,36 +188,34 @@
             datos[categoriaActual].forEach(item => {
                 contenedor.innerHTML += `
                     <div class="card">
+                        <div class="acciones-card">
+                            <button class="btn-accion" onclick="editarTrabajo(${item.id})">✏️</button>
+                            <button class="btn-accion" onclick="eliminarTrabajo(${item.id})" style="color:red">🗑️</button>
+                        </div>
                         ${item.foto ? `<img src="${item.foto}" class="img-preview">` : ''}
                         <div class="card-content">
                             <span class="fecha">📅 ${item.fecha}</span>
                             <strong>${item.vehiculo}</strong> - <span style="color:#2ecc71">$${item.valor.toLocaleString()}</span>
-                            <div style="font-size:14px; color:#444; margin-top:5px;">${item.descripcion}</div>
-                            <button class="btn-ws" onclick="compartirWhatsApp(${item.id})">📲 Enviar por WhatsApp</button>
-                            <label class="checkbox-container">
-                                <input type="checkbox" ${item.seleccionado ? 'checked' : ''} onchange="toggleItem(${item.id})"> Incluir en el cobro
-                            </label>
+                            <div style="font-size:14px; color:#555;">${item.descripcion}</div>
+                            <button class="btn-ws" onclick="compartirWhatsApp(${item.id})">📲 WhatsApp</button>
+                            <label class="checkbox-container"><input type="checkbox" ${item.seleccionado ? 'checked' : ''} onchange="toggleItem(${item.id})"> Incluir</label>
                         </div>
                     </div>`;
             });
         }
 
-        function abrirHistorial() {
-            document.getElementById('pantalla-inicio').classList.add('hidden');
-            document.getElementById('seccion-historial').classList.remove('hidden');
-            const cont = document.getElementById('contenedor-historial');
-            cont.innerHTML = datos.historial.length ? '' : '<p style="text-align:center">Historial vacío.</p>';
-            [...datos.historial].reverse().forEach(item => {
-                cont.innerHTML += `
-                    <div class="card">
-                        ${item.foto ? `<img src="${item.foto}" class="img-preview" style="filter: grayscale(0.5);">` : ''}
-                        <div class="card-content">
-                            <span class="fecha">✅ Archivado: ${item.fecha}</span>
-                            <p><strong>${item.vehiculo}</strong> - $${item.valor.toLocaleString()}</p>
-                            <button class="btn-ws" onclick="compartirWhatsApp(${item.id})">📲 Re-enviar comprobante</button>
-                        </div>
-                    </div>`;
-            });
+        function calcularTotal() {
+            const total = datos[categoriaActual].filter(i => i.seleccionado).reduce((acc, i) => acc + i.valor, 0);
+            const porc = total * 0.40;
+            document.getElementById('resultado-suma').innerText = `Total: $${total.toLocaleString()}`;
+            document.getElementById('resultado-40').innerText = `Porcentaje 40%: $${porc.toLocaleString()}`;
+            document.getElementById('pantalla-total').classList.remove('hidden');
+        }
+
+        function compartirWhatsApp(id) {
+            const item = datos[categoriaActual].find(i => i.id === id);
+            const msg = `*Trabajo:* ${item.vehiculo}%0A*Desc:* ${item.descripcion}%0A*Valor:* $${item.valor.toLocaleString()}`;
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
         }
 
         function toggleItem(id) {
@@ -211,16 +224,20 @@
             localStorage.setItem('trabajos_' + categoriaActual, JSON.stringify(datos[categoriaActual]));
         }
 
-        function calcularTotal() {
-            const total = datos[categoriaActual].filter(i => i.seleccionado).reduce((acc, i) => acc + i.valor, 0);
-            document.getElementById('resultado-suma').innerText = '$' + total.toLocaleString();
-            document.getElementById('pantalla-total').classList.remove('hidden');
+        function previsualizarFoto(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = () => {
+                fotoData = reader.result;
+                document.getElementById('preview-form').src = fotoData;
+                document.getElementById('preview-form').classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
         }
 
         function archivarTrabajos() {
-            const seleccionados = datos[categoriaActual].filter(i => i.seleccionado);
-            if(seleccionados.length === 0) return alert("Selecciona trabajos");
-            datos.historial.push(...seleccionados);
+            const sel = datos[categoriaActual].filter(i => i.seleccionado);
+            datos.historial.push(...sel);
             datos[categoriaActual] = datos[categoriaActual].filter(i => !i.seleccionado);
             localStorage.setItem('trabajos_' + categoriaActual, JSON.stringify(datos[categoriaActual]));
             localStorage.setItem('trabajos_historial', JSON.stringify(datos.historial));
@@ -228,21 +245,20 @@
             renderizarLista();
         }
 
-        function cerrarTotal() { document.getElementById('pantalla-total').classList.add('hidden'); }
         function siguiente(n) {
             [1,2,3,4].forEach(p => document.getElementById('paso'+p).classList.add('hidden'));
             document.getElementById('paso'+n).classList.remove('hidden');
         }
-        function cancelarRegistro() { 
-            document.getElementById('formulario-trabajo').classList.add('hidden');
-            document.getElementById('vista-seccion').classList.remove('hidden');
-            document.getElementById('preview-form').classList.add('hidden');
-            fotoData = '';
-            siguiente(1);
-        }
-        function mostrarFormulario() {
-            document.getElementById('vista-seccion').classList.add('hidden');
-            document.getElementById('formulario-trabajo').classList.remove('hidden');
+        function cancelarRegistro() { document.getElementById('formulario-trabajo').classList.add('hidden'); document.getElementById('vista-seccion').classList.remove('hidden'); }
+        function cerrarTotal() { document.getElementById('pantalla-total').classList.add('hidden'); }
+        function abrirHistorial() {
+            document.querySelectorAll('body > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById('seccion-historial').classList.remove('hidden');
+            const cont = document.getElementById('contenedor-historial');
+            cont.innerHTML = datos.historial.length ? '' : '<p style="text-align:center">Vacío</p>';
+            [...datos.historial].reverse().forEach(item => {
+                cont.innerHTML += `<div class="card"><div class="card-content">📅 ${item.fecha}<br><strong>${item.vehiculo}</strong> - $${item.valor.toLocaleString()}</div></div>`;
+            });
         }
     </script>
 </body>
